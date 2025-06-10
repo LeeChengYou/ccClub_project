@@ -9,26 +9,47 @@
 from flask import Flask, render_template, request
 from stock_parser import get_stock_data
 from stock_analysis import analyze_stock
+import matplotlib.pyplot as plt
+import os
+from matplotlib.font_manager import FontProperties
+font_path = "C:/Windows/Fonts/msjh.ttc"
+font_prop = FontProperties(fname=font_path)
 
 app = Flask(__name__)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    stock_data = None
-    analysis = None
-    symbol = ''
+    stock_data_dict = {}
+    analysis_dict = {}
+    symbols = ''
     error_msg = None
+    period = '1mo'
+
     if request.method == 'POST':
-        symbol = request.form['symbol'].strip()
-        try:
-            stock_data = get_stock_data(symbol)
-            if stock_data.empty:
-                error_msg = "查無資料，請確認股票代號是否正確"
-            else:
-                analysis = analyze_stock(stock_data)
-        except Exception as e:
-            error_msg = f"資料取得錯誤：{e}"
-    return render_template('index.html', symbol=symbol, stock_data=stock_data, analysis=analysis, error_msg=error_msg)
+        symbols = request.form['symbol'].strip()
+        period = request.form.get('period', '1mo')
+        symbol_list = [s.strip() for s in symbols.split(',') if s.strip()]
+
+        for symbol in symbol_list:
+            try:
+                data = get_stock_data(symbol, period)
+                if data.empty:
+                    error_msg = f"查無資料：{symbol}"
+                else:
+                    stock_data_dict[symbol] = data
+                    analysis_dict[symbol] = analyze_stock(data)
+                    plt.figure()
+                    data['Close'].plot(title=f"{symbol} ")
+                    plt.xlabel('日期', fontproperties=font_prop)
+                    plt.ylabel('收盤價', fontproperties=font_prop)
+                    plt.tight_layout()
+                    img_path = f'static/{symbol}_plot.png'
+                    plt.savefig(img_path)
+                    plt.close()
+            except Exception as e:
+                error_msg = f"資料取得錯誤：{e}"
+
+    return render_template('index.html', symbols=symbols, analysis_dict=analysis_dict, error_msg=error_msg)
 
 if __name__ == '__main__':
     app.run(debug=True)
