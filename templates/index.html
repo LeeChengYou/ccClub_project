@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>股票分析</title>
+</head>
+<body>
+    <h1>股票查詢</h1>
+    <form method="POST">
+        <label for="symbol">輸入股票代號（例如 AAPL, 2330.TW）:</label>
+        <input type="text" id="symbol" name="symbol" value="{{ symbol }}">
+        <button type="submit">查詢</button>
+    </form>
+
+    {% if stock_data is not none %}
+        <h2>分析結果：</h2>
+        <ul>
+            <li>平均收盤價: {{ analysis.mean_close }}</li>
+            <li>最高收盤價: {{ analysis.max_close }}</li>
+            <li>最低收盤價: {{ analysis.min_close }}</li>
+            <li>收盤價標準差: {{ analysis.std_close }}</li>
+        </ul>
+    {% endif %}
+</body>
+</html>
