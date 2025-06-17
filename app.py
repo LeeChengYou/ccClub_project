@@ -12,12 +12,22 @@ from stock_analysis import analyze_stock
 import matplotlib.pyplot as plt
 import os
 from matplotlib.font_manager import FontProperties
-font_path = "C:/Windows/Fonts/msjh.ttc"
+font_path = "./static/fronts/mingliu.ttc"
 font_prop = FontProperties(fname=font_path)
 
 app = Flask(__name__)
-
-@app.route('/', methods=['GET', 'POST'])
+# @app.route('/register', methods=['GET', 'POST'])
+# def register():
+#     if request.method == 'POST':
+#         username = request.form['username']
+#         password = request.form['password']
+#         # 在這裡可以添加用戶註冊邏輯
+#         return f"註冊成功：{username}"
+#     return render_template('register.html')
+# @app.route('/')
+# def signin():
+#     return render_template('signin.html')
+@app.route('/index', methods=['GET', 'POST'])
 def index():
     stock_data_dict = {}
     analysis_dict = {}
