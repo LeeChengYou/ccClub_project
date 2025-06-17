@@ -24,6 +24,9 @@ app = Flask(__name__)
 #         # 在這裡可以添加用戶註冊邏輯
 #         return f"註冊成功：{username}"
 #     return render_template('register.html')
+# @app.route('/')
+# def signin():
+#     return render_template('signin.html')
 @app.route('/index', methods=['GET', 'POST'])
 def index():
     stock_data_dict = {}
