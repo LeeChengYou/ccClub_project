@@ -1,7 +1,7 @@
 import yfinance as yf
 
 def get_stock_data(symbol, period="1mo"):
-    extra_days = 25  
+    extra_days = 40  
 
     period_map = {
         "7d": 7,
