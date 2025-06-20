@@ -4,6 +4,7 @@
 # ├── stock_scraper.py     # 股票爬蟲模組
 # ├── stock_analysis.py    # 股票分析模組
 # ├── chart_plotter.py     # 繪圖模組
+# ├── strategy_engine.py   # 策略邏輯判斷模組
 # ├── templates/           # HTML 模板資料夾 (Flask 用)
 # │   └── index.html
 # └── static/              # 靜態檔案 (CSS, JS)
@@ -11,6 +12,7 @@ from flask import Flask, render_template, request
 from stock_parser import get_stock_data
 from stock_analysis import analyze_stock, calculate_sma5, calculate_sma20, calculate_macd
 from chart_plotter import draw_chart
+from strategy_engine import sma_signal, macd_signal
 import os
 from matplotlib.font_manager import FontProperties
 font_path = "./static/fronts/mingliu.ttc"
@@ -53,7 +55,14 @@ def index():
                     dif, macd, histogram = calculate_macd(full_data)
                     sma5 = calculate_sma5(full_data)
                     sma20 = calculate_sma20(full_data)
-                    
+
+                    signal_sma = sma_signal(sma5, sma20)
+                    if signal_sma:
+                        analysis_dict[symbol]['SMA 訊號'] = signal_sma
+                    signal_macd = macd_signal(dif, macd)
+                    if signal_macd:
+                        analysis_dict[symbol]['MACD 訊號'] = signal_macd
+
                     draw_chart(data, full_data, symbol, font_prop, sma5, sma20, dif, macd, histogram)
 
             except Exception as e:
