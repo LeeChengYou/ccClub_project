@@ -44,8 +44,16 @@
                     <li>最高收盤價: {{ analysis.max_close }}</li>
                     <li>最低收盤價: {{ analysis.min_close }}</li>
                     <li>收盤價標準差: {{ analysis.std_close }}</li>
+                    {% if analysis['SMA 訊號'] %}
+                        <li>簡易移動平均（SMA）訊號：{{ analysis['SMA 訊號'] }}</li>
+                    {% endif %}
+                    {% if analysis['MACD 訊號'] %}
+                        <li>指數平滑移動平均（MACD）訊號：{{ analysis['MACD 訊號'] }}</li>
+                    {% endif %}
+
                 </ul>
-                <img src="/static/{{ sym }}_plot.png" alt="{{ sym }} Plot">
+                <img src="/static/{{ sym }}_plot.png" alt="{{ sym }} 技術指標圖">
+                <img src="/static/{{ sym }}_bollinger.png" alt="{{ sym }} 布林通道圖">
             {% endfor %}
         {% endif %}
     </div>
