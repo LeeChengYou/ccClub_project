@@ -1,4 +1,9 @@
+import matplotlib
+matplotlib.use('Agg')  # 禁用 GUI 後端，使用純圖片模式
+
 import matplotlib.pyplot as plt
+from matplotlib import rcParams
+import mplfinance as mpf
 
 def draw_chart(data, full_data, symbol, font_prop, sma5, sma20, dif, macd, histogram):
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 8), sharex=True, gridspec_kw={'height_ratios': [2, 1]})
@@ -25,3 +30,39 @@ def draw_chart(data, full_data, symbol, font_prop, sma5, sma20, dif, macd, histo
     img_path = f'static/{symbol}_plot.png'
     plt.savefig(img_path)
     plt.close()
+
+def draw_bollinger_bands(data, symbol, sma_boll, upper_band, lower_band, font_prop):   
+    apds = [
+        mpf.make_addplot(sma_boll[data.index], color='blue', linestyle='--'),
+        mpf.make_addplot(upper_band[data.index], color='red', linestyle='--'),
+        mpf.make_addplot(lower_band[data.index], color='green', linestyle='--'),
+    ]
+
+    custom_style = mpf.make_mpf_style(
+        base_mpf_style='classic',
+        rc={
+            'font.family': font_prop.get_name(),
+            'axes.unicode_minus': False,
+            'axes.labelweight': 'bold',
+            'axes.labelsize': 20,
+            'ytick.labelsize': 16,
+            'xtick.labelsize': 16,
+        },
+        y_on_right=False
+    )
+
+    fig, axes = mpf.plot(
+        data,
+        type='candle',
+        addplot=apds,
+        style=custom_style,
+        title=f'布林通道',
+        ylabel='價格',
+        volume=False,
+        figratio=(12, 6),
+        figscale=2,
+        returnfig=True
+    )
+    
+    fig.savefig(f'static/{symbol}_bollinger.png')
+    plt.close(fig)

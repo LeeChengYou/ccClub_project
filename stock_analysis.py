@@ -27,3 +27,10 @@ def calculate_macd(data):
     macd = dif.ewm(span=9, adjust=False).mean()
     histogram = dif - macd
     return dif, macd, histogram
+
+def calculate_bollinger_bands(data):
+    sma_boll = data['Close'].rolling(window=20).mean()
+    std = data['Close'].rolling(window=20).std()
+    upper_band = sma_boll + 2 * std
+    lower_band = sma_boll - 2 * std
+    return sma_boll, upper_band, lower_band

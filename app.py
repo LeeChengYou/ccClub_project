@@ -10,8 +10,8 @@
 # └── static/              # 靜態檔案 (CSS, JS)
 from flask import Flask, render_template, request
 from stock_parser import get_stock_data
-from stock_analysis import analyze_stock, calculate_sma5, calculate_sma20, calculate_macd
-from chart_plotter import draw_chart
+from stock_analysis import analyze_stock, calculate_sma5, calculate_sma20, calculate_macd, calculate_bollinger_bands
+from chart_plotter import draw_chart, draw_bollinger_bands
 from strategy_engine import sma_signal, macd_signal
 import os
 from matplotlib.font_manager import FontProperties
@@ -55,6 +55,7 @@ def index():
                     dif, macd, histogram = calculate_macd(full_data)
                     sma5 = calculate_sma5(full_data)
                     sma20 = calculate_sma20(full_data)
+                    sma_boll, upper_band, lower_band = calculate_bollinger_bands(full_data)
 
                     signal_sma = sma_signal(sma5, sma20)
                     if signal_sma:
@@ -64,6 +65,7 @@ def index():
                         analysis_dict[symbol]['MACD 訊號'] = signal_macd
 
                     draw_chart(data, full_data, symbol, font_prop, sma5, sma20, dif, macd, histogram)
+                    draw_bollinger_bands(data, symbol, sma_boll, upper_band, lower_band, font_prop)
 
             except Exception as e:
                 error_msg = f"資料取得錯誤：{e}"
