@@ -10,7 +10,7 @@ def analyze_stock(data):
         'std_close': round(data['Close'].std(), 2),
         'latest_price': round(data['Close'].iloc[-1], 2)
     }
-
+    
 def calculate_sma5(data):
     return data['Close'].rolling(window=5).mean()
 
@@ -34,3 +34,14 @@ def calculate_bollinger_bands(data):
     upper_band = sma_boll + 2 * std
     lower_band = sma_boll - 2 * std
     return sma_boll, upper_band, lower_band
+
+def calculate_rsi(data): # 回傳 RSI 序列
+    delta = data['Close'].diff()
+    gain = delta.where(delta > 0, 0.0)
+    loss = -delta.where(delta < 0, 0.0)
+
+    avg_gain = gain.rolling(window=14).mean()
+    avg_loss = loss.rolling(window=14).mean()
+
+    rsi = 100 * avg_gain / (avg_gain + avg_loss + 1e-10)
+    return rsi

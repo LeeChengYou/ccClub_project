@@ -50,6 +50,7 @@
                     {% if analysis['MACD 訊號'] %}
                         <li>指數平滑移動平均（MACD）訊號：{{ analysis['MACD 訊號'] }}</li>
                     {% endif %}
+                    <li><span style="color: red; font-weight: bold;">策略建議：{{ analysis['策略訊號'] }}</span></li>
 
                 </ul>
                 <img src="/static/{{ sym }}_plot.png" alt="{{ sym }} 技術指標圖">

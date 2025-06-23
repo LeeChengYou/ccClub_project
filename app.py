@@ -10,9 +10,9 @@
 # └── static/              # 靜態檔案 (CSS, JS)
 from flask import Flask, render_template, request
 from stock_parser import get_stock_data
-from stock_analysis import analyze_stock, calculate_sma5, calculate_sma20, calculate_macd, calculate_bollinger_bands
+from stock_analysis import analyze_stock, calculate_sma5, calculate_sma20, calculate_macd, calculate_bollinger_bands, calculate_rsi
 from chart_plotter import draw_chart, draw_bollinger_bands
-from strategy_engine import sma_signal, macd_signal
+from strategy_engine import sma_signal, macd_signal, decide_capital_adjustment
 import os
 from matplotlib.font_manager import FontProperties
 font_path = "./static/fronts/mingliu.ttc"
@@ -55,6 +55,7 @@ def index():
                     dif, macd, histogram = calculate_macd(full_data)
                     sma5 = calculate_sma5(full_data)
                     sma20 = calculate_sma20(full_data)
+                    rsi = calculate_rsi(full_data)
                     sma_boll, upper_band, lower_band = calculate_bollinger_bands(full_data)
 
                     signal_sma = sma_signal(sma5, sma20)
@@ -66,6 +67,18 @@ def index():
 
                     draw_chart(data, full_data, symbol, font_prop, sma5, sma20, dif, macd, histogram)
                     draw_bollinger_bands(data, symbol, sma_boll, upper_band, lower_band, font_prop)
+                    
+                    sma5_today = sma5.iloc[-1]
+                    sma20_today = sma20.iloc[-1]
+                    capital_today = decide_capital_adjustment(0, sma5_today, sma20_today, rsi)
+
+                    if capital_today == 1.0:
+                        signal_text = "累積資金建議：100%"
+                    elif capital_today == 0.5:
+                        signal_text = "累積資金建議：50%"
+                    elif capital_today == 0.0:
+                        signal_text = "累積資金建議：0%"                    
+                    analysis_dict[symbol]["策略訊號"] = signal_text
 
             except Exception as e:
                 error_msg = f"資料取得錯誤：{e}"
