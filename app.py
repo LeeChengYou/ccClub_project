@@ -52,6 +52,10 @@ def index():
                     stock_data_dict[symbol] = data
                     analysis_dict[symbol] = analyze_stock(data)
 
+                    if len(full_data) < 50:
+                        analysis_dict[symbol]['備註'] = f"資料不足 50 筆，略過策略分析與圖表繪製"
+                        continue
+                    
                     dif, macd, histogram = calculate_macd(full_data)
                     sma5 = calculate_sma5(full_data)
                     sma20 = calculate_sma20(full_data)
@@ -65,7 +69,7 @@ def index():
                     if signal_macd:
                         analysis_dict[symbol]['MACD 訊號'] = signal_macd
 
-                    draw_chart(data, full_data, symbol, font_prop, sma5, sma20, dif, macd, histogram)
+                    draw_chart(data, full_data, symbol, font_prop, sma5, sma20, dif, macd, histogram, rsi)
                     draw_bollinger_bands(data, symbol, sma_boll, upper_band, lower_band, font_prop)
                     
                     sma5_today = sma5.iloc[-1]
