@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>登入 - 股票分析系統</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            text-align: center;
+            padding-top: 80px;
+        }
+
+        form {
+            display: inline-block;
+            background: white;
+            padding: 30px 40px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 250px;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            background-color: #007bff;
+            border: none;
+            color: white;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
+
+        .register-link {
+            margin-top: 15px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <h1>登入股票分析系統</h1>
+    <form method="POST">
+        <div>
+            <input type="text" name="username" placeholder="帳號" required>
+        </div>
+        <div>
+            <input type="password" name="password" placeholder="密碼" required>
+        </div>
+        <button type="submit">登入</button>
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+        <a class="register-link" href="{{ url_for('register') }}">還沒有帳號？點這裡註冊</a>
+    </form>
+</body>
+</html>
