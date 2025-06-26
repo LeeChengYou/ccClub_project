@@ -5,14 +5,16 @@
 # ├── stock_analysis.py    # 股票分析模組
 # ├── chart_plotter.py     # 繪圖模組
 # ├── strategy_engine.py   # 策略邏輯判斷模組
+# ├── backtester.py        # 回測模擬模組
 # ├── templates/           # HTML 模板資料夾 (Flask 用)
 # │   └── index.html
 # └── static/              # 靜態檔案 (CSS, JS)
 from flask import Flask, render_template, request
 from stock_parser import get_stock_data
 from stock_analysis import analyze_stock, calculate_sma5, calculate_sma20, calculate_macd, calculate_bollinger_bands, calculate_rsi
-from chart_plotter import draw_chart, draw_bollinger_bands
+from chart_plotter import draw_chart, draw_bollinger_bands, draw_equity_curve
 from strategy_engine import sma_signal, macd_signal, decide_capital_adjustment
+from backtester import backtest_strategy
 import os
 from matplotlib.font_manager import FontProperties
 font_path = "./static/fronts/mingliu.ttc"
@@ -76,13 +78,17 @@ def index():
                     sma20_today = sma20.iloc[-1]
                     capital_today = decide_capital_adjustment(0, sma5_today, sma20_today, rsi)
 
-                    if capital_today == 1.0:
-                        signal_text = "累積資金建議：100%"
-                    elif capital_today == 0.5:
-                        signal_text = "累積資金建議：50%"
-                    elif capital_today == 0.0:
-                        signal_text = "累積資金建議：0%"                    
+                    signal_text = f"資金配置建議：{int(capital_today * 100)}%"
                     analysis_dict[symbol]["策略訊號"] = signal_text
+
+                    result = backtest_strategy(full_data)
+                    start_date = result.index[0].strftime("%Y-%m")
+                    end_date = result.index[-1].strftime("%Y-%m")
+                    total_return = result['returns'].iloc[-1]
+
+                    analysis_dict[symbol]["回測期間"] = f"{start_date} ～ {end_date}"
+                    analysis_dict[symbol]["回測報酬"] = f"{total_return:.2%}"
+                    draw_equity_curve(result, symbol, font_prop)
 
             except Exception as e:
                 error_msg = f"資料取得錯誤：{e}"

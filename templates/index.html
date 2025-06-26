@@ -44,14 +44,14 @@
                     <li>最高收盤價: {{ analysis.max_close }}</li>
                     <li>最低收盤價: {{ analysis.min_close }}</li>
                     <li>收盤價標準差: {{ analysis.std_close }}</li>
-                    {% if analysis['SMA 訊號'] %}
+                    {% if analysis.get('SMA 訊號') %}
                         <li><span style="color: #007BFF; font-weight: bold;">SMA 訊號：{{ analysis['SMA 訊號'] }}</span></li>
                     {% endif %}
-                    {% if analysis['MACD 訊號'] %}
+                    {% if analysis.get('MACD 訊號') %}
                         <li><span style="color: #007BFF; font-weight: bold;">MACD 訊號：{{ analysis['MACD 訊號'] }}</span></li>
                     {% endif %}
-                    {% if analysis['策略訊號'] %}
-                        <li><span style="color: red; font-weight: bold;">策略建議：{{ analysis['策略訊號'] }}</span></li>
+                    {% if analysis.get('策略訊號') %}
+                        <li><span style="color: red; font-weight: bold;">{{ analysis['策略訊號'] }}</span></li>
                     {% endif %}
 
                 </ul>
@@ -59,8 +59,15 @@
                     <div class="error">{{ analysis['備註'] }}</div>
                 {% endif %}
                 {% if not analysis.get('備註') %}
+                    <h3>技術指標圖</h3>
                     <img src="/static/{{ sym }}_plot.png" alt="{{ sym }} 技術指標圖">
+                    <h3>布林通道圖</h3>
                     <img src="/static/{{ sym }}_bollinger.png" alt="{{ sym }} 布林通道圖">
+                {% endif %}
+                {% if analysis.get("回測報酬") %}
+                    <h3>策略回測總資產變化</h3>
+                    <p style="color:#007BFF; font-weight: bold;">回測期間：{{ analysis["回測期間"] }}｜總報酬：{{ analysis["回測報酬"] }}</p>
+                    <img src="/static/{{ sym }}_equitycurve.png" alt="{{ sym }} 資產曲線圖">
                 {% endif %}
             {% endfor %}
         {% endif %}

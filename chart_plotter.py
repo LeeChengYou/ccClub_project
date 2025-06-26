@@ -18,22 +18,23 @@ def draw_chart(data, full_data, symbol, font_prop, sma5, sma20, dif, macd, histo
     align(sma5, data.index).plot(ax=ax1, label='SMA5', linestyle='--', color='#FFA07A')
     align(sma20, data.index).plot(ax=ax1, label='SMA20', linestyle=':', color='#006400')
 
-    ax1.set_title(f"{symbol}", fontsize=20, fontname='DejaVu Sans')
     ax1.set_ylabel('價格', fontsize=14, fontproperties=font_prop)
-    ax1.tick_params(axis='x', labelsize=0)
+    ax1.tick_params(axis='x', labelsize=10)
     ax1.legend(loc='best', fontsize=14, frameon=False, prop=font_prop)
-    ax1.grid(False)
+    ax1.grid(True, linestyle=':', linewidth=0.7, alpha=0.5)
+    ax1.tick_params(axis='y', labelsize=12)
 
     align(rsi, data.index).plot(ax=ax2, label='RSI', linewidth=1.5, color='#4169E1')
     ax2.axhline(70, color='#CC0000', linestyle='--', linewidth=1)
     ax2.axhline(30, color='#228B22', linestyle='--', linewidth=1)
-    ax2.text(data.index[2], 72, 'Overbought', color='#CC0000', alpha=0.7, fontsize=14, ha='left', va='bottom', fontproperties=font_prop)
-    ax2.text(data.index[2], 32, 'Oversold', color='#228B22', alpha=0.7, fontsize=14, ha='left', va='bottom', fontproperties=font_prop)
-    
+    # ax2.text(data.index[2], 72, 'Overbought', color='#CC0000', alpha=0.7, fontsize=14, ha='left', va='bottom', fontproperties=font_prop)
+    # ax2.text(data.index[2], 32, 'Oversold', color='#228B22', alpha=0.7, fontsize=14, ha='left', va='bottom', fontproperties=font_prop)
+
     ax2.set_ylabel('RSI', fontsize=14, fontproperties=font_prop)
-    ax2.tick_params(axis='x', labelsize=0)
+    ax2.tick_params(axis='x', labelsize=10)
     ax2.legend(loc='best', fontsize=14, frameon=False, prop=font_prop)
-    ax2.grid(True, linestyle=':', alpha=0.5)
+    ax2.grid(True, linestyle=':', linewidth=0.7, alpha=0.5)
+    ax2.tick_params(axis='y', labelsize=12)
 
     align(dif, data.index).plot(ax=ax3, label='DIF', linewidth=1, color='#1E90FF')
     align(macd, data.index).plot(ax=ax3, label='MACD', linewidth=1, color='#FF6347')   
@@ -42,7 +43,7 @@ def draw_chart(data, full_data, symbol, font_prop, sma5, sma20, dif, macd, histo
     
     ax3.set_xlabel("日期", fontsize=14, fontproperties=font_prop)
     ax3.set_ylabel('MACD / DIF', fontsize=14, fontproperties=font_prop)
-    ax3.tick_params(axis='x', labelsize=14)
+    ax3.tick_params(axis='both', labelsize=12)
     ax3.legend(loc='best', fontsize=14, frameon=False, prop=font_prop)
     ax3.grid(True, linestyle=':', linewidth=0.7, alpha=0.5)
     ax3.axhline(0, color='black', linewidth=0.8, linestyle='--', alpha=0.6)
@@ -96,7 +97,31 @@ def draw_bollinger_bands(data, symbol, sma_boll, upper_band, lower_band, font_pr
         datetime_format='%Y-%m-%d'
     )
     
-    fig.suptitle('布林通道', fontsize=24, fontproperties=font_prop, y=0.95)
     fig.tight_layout()
     fig.savefig(f'static/{symbol}_bollinger.png')
     plt.close(fig)
+
+def draw_equity_curve(result, symbol, font_prop):
+    fig, ax1 = plt.subplots(figsize=(12, 8))
+
+    ax1_2 = ax1.twinx()
+    line_equity = ax1.plot(result.index, result['equity'], label='總資產變化曲線', linewidth=1.5, color='#FF6347')[0]
+    line_price = ax1_2.plot(result.index, result['price'], label='股價', linewidth=1.5, color='#1E90FF')[0]
+    initial_cash = 100_000
+    line_initial_cash = ax1.axhline(initial_cash, color='#000000', linestyle='-', linewidth=0.6, label='初始資金')
+
+    ax1.set_xlabel("日期", fontsize=14, fontproperties=font_prop)
+    ax1.set_ylabel("總資產", fontsize=14, fontproperties=font_prop)
+    ax1_2.set_ylabel("價格", fontsize=14, fontproperties=font_prop)
+    ax1.grid(True, linestyle=':', linewidth=0.7, alpha=0.5)
+    ax1.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m'))
+    ax1.tick_params(axis='both', labelsize=12)
+    ax1_2.tick_params(axis='both', labelsize=12)
+
+    lines = [line_equity, line_price, line_initial_cash]
+    labels = [line.get_label() for line in lines]
+    ax1.legend(lines, labels, loc='best', fontsize=14, frameon=False, prop=font_prop)
+
+    fig.autofmt_xdate()
+    plt.savefig(f'static/{symbol}_equitycurve.png')
+    plt.close()

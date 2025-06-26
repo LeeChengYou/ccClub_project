@@ -3,7 +3,7 @@ import pandas as pd
 
 def get_stock_data(symbol, period="1mo"):
     stock = yf.Ticker(symbol)
-    full_data = stock.history(period="400d") # 數值計算、回測
+    full_data = stock.history(period="252d") # 數值計算、回測
 
     full_data = full_data.dropna(subset=['Close'])
     full_data.index = pd.to_datetime(full_data.index)
