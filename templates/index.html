@@ -16,6 +16,10 @@
 </head>
 <body>
     <div class="container">
+        <div class="topbar">
+            使用者：{{ username }}
+            <a href="{{ url_for('logout') }}">登出</a>
+        </div>
         <h1>股票查詢與分析</h1>
         <form method="POST">
             <label for="symbol">輸入股票代號（可用逗號分隔，如 AAPL,TSLA,2330.TW）:</label>
