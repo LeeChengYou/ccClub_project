@@ -23,17 +23,16 @@ import os
 from matplotlib.font_manager import FontProperties
 from trend_predictor import predict_next_5_days
 from trend_predictor import evaluate_model_accuracy
-font_path = "./static/fronts/mingliu.ttc"
-font_prop = FontProperties(fname=font_path)
 
 
-app = Flask(__name__)
-app.secret_key = os.urandom(24)
+
 
 # 設定中文字型
-font_path = "./static/fonts/mingliu.ttc"
+font_path = "./static/fronts/mingliu.ttc"
 font_prop = FontProperties(fname=font_path)
-
+#初始化app
+app = Flask(__name__)
+app.secret_key = 'jefflee_secret_flask_key_123'
 # 初始化使用者資料表
 init_db()
 
@@ -98,7 +97,7 @@ def index():
                 full_data, data = get_stock_data(symbol, period)
                 if data.empty:
 
-                    error_msg = f"查無資料：{symbol}"
+                    error_msgs.append(f"查無資料：{symbol}")
                 else:
                     stock_data_dict[symbol] = data
                     analysis_dict[symbol] = analyze_stock(data)
@@ -125,7 +124,7 @@ def index():
                     backtest_df = evaluate_model_accuracy(symbol).head(10)
                     analysis_dict[symbol]['回測結果'] = backtest_df.to_dict(orient='records')
             except Exception as e:
-                error_msg = f"資料取得錯誤：{e}"
+                error_msgs.append(f"{symbol} 取得錯誤：{str(e)}")
 
                 # 訊號判斷
                 signal_sma = sma_signal(sma5, sma20)
@@ -148,3 +147,7 @@ def index():
                            symbols=symbols,
                            analysis_dict=analysis_dict,
                            error_msg='<br>'.join(error_msgs) if error_msgs else None)
+    
+
+if __name__ == '__main__':
+    app.run(debug=True)
