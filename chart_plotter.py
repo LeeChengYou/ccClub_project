@@ -112,10 +112,17 @@ def draw_combined_technical_plot(data, full_data, symbol, sma5, sma20, dif, macd
         width=1000,
         template="plotly_white",
         showlegend=True,
-        margin=dict(t=60, b=40, l=40, r=100),
+        margin=dict(t=60, b=40, l=40, r=60),
+        hovermode="x unified",
+        hoverlabel=dict(
+            bgcolor="white",
+            font_size=13,
+            bordercolor="lightgray",
+            align="left"
+        ),
         legend=dict(
-            x=0.98,
-            y=0.98,
+            x=0.95,
+            y=0.95,
             xanchor='right',
             yanchor='top',
             bgcolor='rgba(255,255,255,0.8)',
