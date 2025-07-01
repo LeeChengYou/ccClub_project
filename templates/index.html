@@ -107,11 +107,24 @@
             background-color: #f9f9f9;
         }
 
-        iframe, img {
+        img {
             margin-top: 10px;
             width: 100%;
             border-radius: 8px;
             border: none;
+        }
+        iframe {
+            margin-top: 10px;
+            border-radius: 8px;
+            border: none;
+        }
+        .container {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            max-width: 1400px; /* 從 1000px 增加到 1400px (或更大，例如 1600px) */
+            margin: auto;
+            box-shadow: 0 0 12px rgba(0,0,0,0.1);
         }
     </style>
 </head>
@@ -159,8 +172,8 @@
                     <img class="static-chart" src="/static/{{ sym }}_plot.png" alt="{{ sym }} 簡易圖表" style="display:block;">
 
                     <!-- 互動式圖 -->
-                    <iframe src="{{ url_for('static', filename=sym + '_technical_plot.html') }}" width="1100" height="800" style="border:none;"></iframe>
-
+                    <iframe class="interactive-chart" src="{{ url_for('static', filename=sym + '_technical_plot.html') }}"
+width="2000" height="800" style="border:none; display:none;"></iframe>
                     <!-- 指標資料 -->
                      <p><b>查詢時間區間：</b>{{ period }}</p>
                     <ul>

@@ -90,7 +90,6 @@ def draw_combined_technical_plot(data, full_data, symbol, sma5, sma20, dif, macd
         shared_xaxes=True,
         vertical_spacing=0.12,
         row_heights=[0.65, 0.35],
-        #subplot_titles=(f"{symbol} 技術分析", "MACD 指標")
     )
 
     # --- 上層：價格 + SMA + 布林通道 ---
@@ -108,29 +107,32 @@ def draw_combined_technical_plot(data, full_data, symbol, sma5, sma20, dif, macd
 
     # --- 圖表美化 ---
     fig.update_layout(
-        height=750,
-        width=1000,
-        template="plotly_white",
-        showlegend=True,
-        margin=dict(t=60, b=40, l=40, r=60),
-        hovermode="x unified",
-        hoverlabel=dict(
-            bgcolor="white",
-            font_size=13,
-            bordercolor="lightgray",
-            align="left"
-        ),
         legend=dict(
-            x=0.95,
-            y=0.95,
-            xanchor='right',
-            yanchor='top',
-            bgcolor='rgba(255,255,255,0.8)',
-            bordercolor='lightgray',
-            borderwidth=1
-        )
+            orientation='h', # 保持水平排列
+            x=0.5,           # X 座標置中
+            y=-0.2,          # 將 Y 座標設定為負值，放在圖表下方（根據實際情況調整此值）
+            xanchor='center',# 錨點設定為置中
+            yanchor='top',   # 錨點設定為頂部
+            font=dict(size=14),
+            # ====== 微調這裡！ ======
+            # 增加 tracegroupgap，給每個項目更多呼吸空間
+            tracegroupgap=50, # 從 20 增加到 25 (或 30)，讓項目之間更寬鬆
+            # 保持 itemwidth 或根據需要稍作調整。
+            # 之前設定的 80 應該足夠，但如果文字較長，可以微調到 90
+            itemwidth=100,     # 如果 80 還有點擠，嘗試 90 看看
+        ),
+        # ====== 底部邊距可以再稍微增加一點點，以防圖例文字換行或溢出 ======
+        margin=dict(
+            t=60,
+            b=130, # 再次增加底部邊距，確保圖例有足夠的垂直空間 (從 120 增加到 130 或 150)
+            l=60,
+            r=20
+        ),
+        width=1200,
+        height=800,
+        #title_text=f"{symbol} 技術分析",
+        title_x=0.5
     )
-
     fig.update_xaxes(title_text="日期", row=2, col=1)
     fig.update_yaxes(title_text="價格", row=1, col=1)
     fig.update_yaxes(title_text="MACD / DIF", row=2, col=1)
