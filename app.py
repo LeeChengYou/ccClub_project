@@ -16,13 +16,14 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from stock_parser import get_stock_data
 from stock_analysis import analyze_stock, calculate_sma5, calculate_sma20, calculate_macd, calculate_bollinger_bands
-from chart_plotter import draw_chart, draw_bollinger_bands
+from chart_plotter import draw_chart, draw_bollinger_bands , draw_combined_technical_plot_dropdown ,draw_combined_technical_plot
 from strategy_engine import sma_signal, macd_signal
 from db import init_db, register_user, validate_user
 import os
 from matplotlib.font_manager import FontProperties
 from trend_predictor import predict_next_5_days
 from trend_predictor import evaluate_model_accuracy
+from plotly.subplots import make_subplots
 
 
 
@@ -86,6 +87,7 @@ def index():
     symbols = ''
     error_msgs = []
     period = '1mo'
+    all_data_dict = {}
 
     if request.method == 'POST':
         symbols = request.form['symbol'].strip(' ')
@@ -99,6 +101,7 @@ def index():
 
                     error_msgs.append(f"查無資料：{symbol}")
                 else:
+                    
                     stock_data_dict[symbol] = data
                     analysis_dict[symbol] = analyze_stock(data)
 
@@ -113,9 +116,21 @@ def index():
                     signal_macd = macd_signal(dif, macd)
                     if signal_macd:
                         analysis_dict[symbol]['MACD 訊號'] = signal_macd
-
+                    all_data_dict[symbol] = {
+                    'data': data,
+                    'sma5': sma5,
+                    'sma20': sma20,
+                    'upper': upper_band,
+                    'lower': lower_band,
+                    'macd': macd,
+                    'dif': dif,
+                    'hist': histogram}
                     draw_chart(data, full_data, symbol, font_prop, sma5, sma20, dif, macd, histogram)
                     draw_bollinger_bands(data, symbol, sma_boll, upper_band, lower_band, font_prop)
+                    draw_combined_technical_plot(
+                        data, full_data, symbol, sma5, sma20, dif, macd, histogram,
+                        sma_boll, upper_band, lower_band)
+                    draw_combined_technical_plot_dropdown(all_data_dict)
                     
                     future_trend = predict_next_5_days(symbol)
                     analysis_dict[symbol]['未來5日預測'] = future_trend
@@ -126,26 +141,11 @@ def index():
             except Exception as e:
                 error_msgs.append(f"{symbol} 取得錯誤：{str(e)}")
 
-                # 訊號判斷
-                signal_sma = sma_signal(sma5, sma20)
-                if signal_sma:
-                    analysis_dict[symbol]['SMA 訊號'] = signal_sma
-
-                signal_macd = macd_signal(dif, macd)
-                if signal_macd:
-                    analysis_dict[symbol]['MACD 訊號'] = signal_macd
-
-                # 圖表繪製
-                draw_chart(data, full_data, symbol, font_prop, sma5, sma20, dif, macd, histogram)
-                draw_bollinger_bands(data, symbol, sma_boll, upper_band, lower_band, font_prop)
-
-            except Exception as e:
-                error_msgs.append(f"{symbol} 取得錯誤：{str(e)}")
-
     return render_template('index.html',
                            username=session['username'],
                            symbols=symbols,
                            analysis_dict=analysis_dict,
+                           period=period,
                            error_msg='<br>'.join(error_msgs) if error_msgs else None)
     
 
