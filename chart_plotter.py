@@ -110,11 +110,18 @@ def draw_combined_technical_plot(data, full_data, symbol, sma5, sma20, dif, macd
     fig.update_layout(
         height=750,
         width=1000,
-        #title=dict(text=f"{symbol} 綜合技術圖", x=0.5, xanchor='center'),
         template="plotly_white",
         showlegend=True,
-        margin=dict(t=60, b=40, l=40, r=20),
-        legend=dict(x=1.02, y=1, borderwidth=0)
+        margin=dict(t=60, b=40, l=40, r=100),
+        legend=dict(
+            x=0.98,
+            y=0.98,
+            xanchor='right',
+            yanchor='top',
+            bgcolor='rgba(255,255,255,0.8)',
+            bordercolor='lightgray',
+            borderwidth=1
+        )
     )
 
     fig.update_xaxes(title_text="日期", row=2, col=1)
@@ -125,67 +132,3 @@ def draw_combined_technical_plot(data, full_data, symbol, sma5, sma20, dif, macd
     output_path = f"static/{symbol}_technical_plot.html"
     fig.write_html(output_path)
     
-def draw_combined_technical_plot_dropdown(all_data_dict, output_path='static/combined_tech_plot.html'):
-    fig = make_subplots(
-        rows=2, cols=1,
-        shared_xaxes=True,
-        vertical_spacing=0.1,
-        row_heights=[0.65, 0.35]
-    )
-
-    visibility = []
-    buttons = []
-    i = 0
-
-    for symbol, info in all_data_dict.items():
-        # 拆出各種資料
-        data = info['data']
-        sma5 = info['sma5']
-        sma20 = info['sma20']
-        upper_band = info['upper']
-        lower_band = info['lower']
-        macd = info['macd']
-        dif = info['dif']
-        hist = info['hist']
-
-        # 上層圖
-        fig.add_trace(go.Scatter(x=data.index, y=data['Close'], name=f"{symbol} 收盤價", line=dict(color='blue')), row=1, col=1)
-        fig.add_trace(go.Scatter(x=sma5.index, y=sma5, name=f"{symbol} SMA5", line=dict(color='orange', dash='dash')), row=1, col=1)
-        fig.add_trace(go.Scatter(x=sma20.index, y=sma20, name=f"{symbol} SMA20", line=dict(color='green', dash='dot')), row=1, col=1)
-        fig.add_trace(go.Scatter(x=upper_band.index, y=upper_band, name=f"{symbol} 上軌", line=dict(color='red', dash='dot')), row=1, col=1)
-        fig.add_trace(go.Scatter(x=lower_band.index, y=lower_band, name=f"{symbol} 下軌", line=dict(color='purple', dash='dot')), row=1, col=1)
-
-        # 下層圖
-        fig.add_trace(go.Scatter(x=macd.index, y=macd, name=f"{symbol} MACD", line=dict(color='red')), row=2, col=1)
-        fig.add_trace(go.Scatter(x=dif.index, y=dif, name=f"{symbol} DIF", line=dict(color='blue')), row=2, col=1)
-        fig.add_trace(go.Bar(x=hist.index, y=hist, name=f"{symbol} Histogram", marker=dict(color='gray'), opacity=0.4), row=2, col=1)
-
-        # 紀錄可見性控制（每支股票 8 筆 trace）
-        vis = [False] * len(all_data_dict) * 8
-        for j in range(8):
-            vis[i*8 + j] = True
-
-        visibility.append(vis)
-
-        # 新增選單按鈕
-        buttons.append(dict(label=symbol,
-                            method="update",
-                            args=[{"visible": vis},
-                                  {"title": f"{symbol} 技術分析圖"}]))
-
-        i += 1
-
-    fig.update_layout(
-        #title="技術分析圖",
-        updatemenus=[dict(active=0, buttons=buttons, x=1.15, xanchor='left')],
-        height=750,
-        template="plotly_white",
-        margin=dict(t=60, b=40)
-    )
-
-    # 預設顯示第一支股票
-    fig.update_traces(visible=False)
-    for i in range(8):
-        fig.data[i].visible = True
-
-    fig.write_html(output_path)

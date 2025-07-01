@@ -159,8 +159,10 @@
                     <img class="static-chart" src="/static/{{ sym }}_plot.png" alt="{{ sym }} 簡易圖表" style="display:block;">
 
                     <!-- 互動式圖 -->
-                    <iframe class="interactive-chart" src="{{ url_for('static', filename=sym + '_technical_plot.html') }}"
-                            height="750" style="display:none;"></iframe>
+                    <iframe class="interactive-chart"
+                    src="{{ url_for('static', filename=sym + '_technical_plot.html') }}"
+                    width="100%" height="900"
+                    style="border:none; overflow:visible; padding-right:700px;"></iframe>
 
                     <!-- 指標資料 -->
                      <p><b>查詢時間區間：</b>{{ period }}</p>

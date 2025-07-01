@@ -16,7 +16,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from stock_parser import get_stock_data
 from stock_analysis import analyze_stock, calculate_sma5, calculate_sma20, calculate_macd, calculate_bollinger_bands
-from chart_plotter import draw_chart, draw_bollinger_bands , draw_combined_technical_plot_dropdown ,draw_combined_technical_plot
+from chart_plotter import draw_chart, draw_bollinger_bands  ,draw_combined_technical_plot
 from strategy_engine import sma_signal, macd_signal
 from db import init_db, register_user, validate_user
 import os
@@ -130,7 +130,7 @@ def index():
                     draw_combined_technical_plot(
                         data, full_data, symbol, sma5, sma20, dif, macd, histogram,
                         sma_boll, upper_band, lower_band)
-                    draw_combined_technical_plot_dropdown(all_data_dict)
+                    
                     
                     future_trend = predict_next_5_days(symbol)
                     analysis_dict[symbol]['未來5日預測'] = future_trend
