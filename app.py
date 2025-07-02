@@ -106,9 +106,17 @@ def index():
                     analysis_dict[symbol] = analyze_stock(data)
 
                     dif, macd, histogram = calculate_macd(full_data)
-                    sma5 = calculate_sma5(full_data)
-                    sma20 = calculate_sma20(full_data)
+                    dif = dif.loc[data.index]
+                    macd = macd.loc[data.index]
+                    histogram = histogram.loc[data.index]
+                    
+                    sma5 = calculate_sma5(full_data).loc[data.index]
+                    sma20 = calculate_sma20(full_data).loc[data.index]
+                    
                     sma_boll, upper_band, lower_band = calculate_bollinger_bands(full_data)
+                    sma_boll = sma_boll.loc[data.index]
+                    upper_band = upper_band.loc[data.index]
+                    lower_band = lower_band.loc[data.index]
 
                     signal_sma = sma_signal(sma5, sma20)
                     if signal_sma:
